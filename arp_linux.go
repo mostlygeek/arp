@@ -4,21 +4,24 @@ package arp
 
 import (
 	"bufio"
-	"net"
 	"os"
 	"strings"
 )
 
 const (
-	IPAddr int = iota
-	HWType
-	Flags
-	HWAddr
-	Mask
-	Device
+	f_IPAddr int = iota
+	f_HWType
+	f_Flags
+	f_HWAddr
+	f_Mask
+	f_Device
 )
 
-type ArpTable map[string]net.HardwareAddr
+var (
+	cache = make(ArpTable)
+)
+
+type ArpTable map[string]string
 
 func Table() ArpTable {
 	f, err := os.Open("/proc/net/arp")
@@ -38,20 +41,20 @@ func Table() ArpTable {
 	for s.Scan() {
 		line := s.Text()
 		fields := strings.Fields(line)
-
-		ip := net.ParseIP(fields[IPAddr])
-		if ip == nil {
-			continue
-		}
-
-		mac, err := net.ParseMAC(fields[HWAddr])
-
-		if err != nil {
-			continue
-		}
-
-		table[fields[IPAddr]] = mac
+		table[fields[f_IPAddr]] = fields[f_HWAddr]
 	}
 
 	return table
+}
+
+// Search looks up the MAC address for an IP address
+// in the arp table
+func Search(ip string) string {
+
+	if cache[ip] == "" {
+		cache = Table()  // refresh the cache
+		return cache[ip] // hope that it's there
+	}
+
+	return cache[ip]
 }
