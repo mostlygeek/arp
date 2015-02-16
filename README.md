@@ -1,7 +1,9 @@
-golang utility for looking up MAC address by IP address. 
+golang library for looking up MAC address by IP address. It currently supports
+different methods for retrieving the ARP cache from the system depending if running
+on Linux or OSX. 
 
-TODO 
-====
+I've only tested this library on OSX and Linux. 
 
-* support OSX
-* support Freebsd 
+For Linux, `/proc/net/arp` is used. For OSX (or other unix systems), `exec.Command` is
+used to call the `arp` utility and parse its output. 
+
