@@ -17,12 +17,6 @@ const (
 	f_Device
 )
 
-var (
-	cache = make(ArpTable)
-)
-
-type ArpTable map[string]string
-
 func Table() ArpTable {
 	f, err := os.Open("/proc/net/arp")
 
@@ -33,7 +27,6 @@ func Table() ArpTable {
 	defer f.Close()
 
 	s := bufio.NewScanner(f)
-
 	s.Scan() // skip the field descriptions
 
 	var table = make(ArpTable)
@@ -45,17 +38,4 @@ func Table() ArpTable {
 	}
 
 	return table
-}
-
-// Search looks up the MAC address for an IP address
-// in the arp table
-func Search(ip string) string {
-
-	mac, ok := cache[ip]
-	if !ok {
-		cache = Table()  // refresh the cache
-		return cache[ip] // hope that it's there
-	}
-
-	return mac
 }

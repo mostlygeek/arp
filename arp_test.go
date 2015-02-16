@@ -13,7 +13,6 @@ func TestTable(t *testing.T) {
 }
 
 func TestSearch(t *testing.T) {
-
 	table := Table()
 
 	for ip, test := range table {
@@ -22,7 +21,6 @@ func TestSearch(t *testing.T) {
 		if test != result {
 			t.Errorf("expected %s got %s", test, result)
 		}
-
 	}
 }
 
