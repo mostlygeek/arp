@@ -13,15 +13,12 @@ var (
 	}
 )
 
-func StartAutoRefresh(t time.Duration, onUpdate func()) {
+func AutoRefresh(t time.Duration) {
 	go func() {
 		for {
 			select {
 			case <-time.After(t):
 				arpCache.Refresh()
-				if onUpdate != nil {
-					onUpdate()
-				}
 			case <-stop:
 				return
 			}

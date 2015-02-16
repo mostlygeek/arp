@@ -40,7 +40,7 @@ func TestAutoRefresh(t *testing.T) {
 	prevUpdated := CacheLastUpdate().UnixNano()
 	prevCount := CacheUpdateCount()
 
-	StartAutoRefresh(100*time.Millisecond, nil)
+	AutoRefresh(100 * time.Millisecond)
 	time.Sleep(200 * time.Millisecond)
 	StopAutoRefresh()
 
