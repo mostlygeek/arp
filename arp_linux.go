@@ -51,10 +51,11 @@ func Table() ArpTable {
 // in the arp table
 func Search(ip string) string {
 
-	if cache[ip] == "" {
+	mac, ok := cache[ip]
+	if !ok {
 		cache = Table()  // refresh the cache
 		return cache[ip] // hope that it's there
 	}
 
-	return cache[ip]
+	return mac
 }
