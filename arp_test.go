@@ -1,7 +1,13 @@
 package arp
 
 import (
+	"fmt"
 	"testing"
+	"time"
+)
+
+var (
+	_ = fmt.Println
 )
 
 func TestTable(t *testing.T) {
@@ -9,6 +15,53 @@ func TestTable(t *testing.T) {
 	table := Table()
 	if table == nil {
 		t.Errorf("Empty table")
+	}
+}
+
+func TestCacheInfo(t *testing.T) {
+	prevUpdated := CacheLastUpdate().UnixNano()
+	prevCount := CacheUpdateCount()
+
+	CacheUpdate()
+
+	if prevUpdated == CacheLastUpdate().UnixNano() {
+		t.Error()
+	}
+
+	if prevCount == CacheUpdateCount() {
+		t.Error()
+	}
+}
+
+func TestAutoRefresh(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping autorefresh test")
+	}
+	prevUpdated := CacheLastUpdate().UnixNano()
+	prevCount := CacheUpdateCount()
+
+	StartAutoRefresh(100*time.Millisecond, nil)
+	time.Sleep(200 * time.Millisecond)
+	StopAutoRefresh()
+
+	if prevUpdated == CacheLastUpdate().UnixNano() {
+		t.Error()
+	}
+
+	if prevCount == CacheUpdateCount() {
+		t.Error()
+	}
+
+	// test to make sure stop worked
+	prevUpdated = CacheLastUpdate().UnixNano()
+	prevCount = CacheUpdateCount()
+	time.Sleep(200 * time.Millisecond)
+	if prevUpdated != CacheLastUpdate().UnixNano() {
+		t.Error()
+	}
+
+	if prevCount != CacheUpdateCount() {
+		t.Error()
 	}
 }
 

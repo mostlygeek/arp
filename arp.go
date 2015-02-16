@@ -1,43 +1,49 @@
 package arp
 
 import (
-	"sync"
+	"time"
 )
 
 type ArpTable map[string]string
 
-type cache struct {
-	sync.RWMutex
-	table ArpTable
-}
-
-func (c *cache) Refresh() {
-	c.Lock()
-	defer c.Unlock()
-	c.table = Table()
-}
-
-func (c *cache) Search(ip string) string {
-	c.RLock()
-	defer c.RUnlock()
-
-	mac, ok := c.table[ip]
-
-	if !ok {
-		c.RUnlock()
-		c.Refresh()
-		c.RLock()
-		mac = c.table[ip]
-	}
-
-	return mac
-}
-
 var (
+	stop     = make(chan struct{})
 	arpCache = &cache{
 		table: make(ArpTable),
 	}
 )
+
+func StartAutoRefresh(t time.Duration, onUpdate func()) {
+	go func() {
+		for {
+			select {
+			case <-time.After(t):
+				arpCache.Refresh()
+				if onUpdate != nil {
+					onUpdate()
+				}
+			case <-stop:
+				return
+			}
+		}
+	}()
+}
+
+func StopAutoRefresh() {
+	stop <- struct{}{}
+}
+
+func CacheUpdate() {
+	arpCache.Refresh()
+}
+
+func CacheLastUpdate() time.Time {
+	return arpCache.Updated
+}
+
+func CacheUpdateCount() int {
+	return arpCache.UpdatedCount
+}
 
 // Search looks up the MAC address for an IP address
 // in the arp table
