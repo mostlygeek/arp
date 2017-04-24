@@ -1,4 +1,4 @@
-// +build !linux
+// +build !linux,!windows
 
 // only tested on OSX
 // decided to go with exec.Command after I couldn't figure
