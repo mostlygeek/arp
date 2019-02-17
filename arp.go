@@ -2,6 +2,7 @@ package arp
 
 import (
 	"time"
+	"errors"
 )
 
 type ArpTable map[string]string
@@ -46,4 +47,16 @@ func CacheUpdateCount() int {
 // in the arp table
 func Search(ip string) string {
 	return arpCache.Search(ip)
+}
+
+// Search looks up the IP address by MAC address
+// in the arp table
+func SearchByMac(target string) (string, error) {
+	for ip, _ := range Table() {
+		m := Search(ip)
+		if(m == target) {
+			return ip, nil
+		}
+	}
+	return "", errors.New("Mac not found")
 }
