@@ -30,8 +30,7 @@ func Table() ArpTable {
 		// strip brackets around IP
 		ip := strings.Replace(fields[1], "(", "", -1)
 		ip = strings.Replace(ip, ")", "", -1)
-
-		table[ip] = fields[3]
+		table[ip] = padMacString(fields[3])
 	}
 
 	return table

@@ -34,7 +34,7 @@ func Table() ArpTable {
 	for s.Scan() {
 		line := s.Text()
 		fields := strings.Fields(line)
-		table[fields[f_IPAddr]] = fields[f_HWAddr]
+		table[fields[f_IPAddr]] = padMacString(fields[f_HWAddr])
 	}
 
 	return table

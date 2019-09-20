@@ -42,7 +42,7 @@ func Table() ArpTable {
 
 		ip := fields[0]
 		// Normalize MAC address to colon-separated format
-		table[ip] = strings.Replace(fields[1], "-", ":", -1)
+		table[ip] = padMacString(strings.Replace(fields[1], "-", ":", -1))
 	}
 
 	return table
