@@ -9,10 +9,13 @@ package arp
 import (
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 func Table() ArpTable {
-	data, err := exec.Command("arp", "-a").Output()
+	cmd := exec.Command("arp", "-a")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	data, err := cmd.Output()
 	if err != nil {
 		return nil
 	}
